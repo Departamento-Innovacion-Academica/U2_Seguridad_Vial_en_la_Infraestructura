@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fundamentos de Seguridad Vial e Ingeniería</title>
+  
+  <!-- Google Fonts: Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary-color: #27728F;
+      --primary-glow: rgba(39, 114, 143, 0.35);
+      --bg-gradient: radial-gradient(circle at 50% 0%, #0d1b2a 0%, #060e14 60%, #020508 100%);
+      --card-bg: rgba(13, 27, 42, 0.75);
+      --card-border: rgba(39, 114, 143, 0.3);
+      --card-border-hover: #48a9a6;
+      --text-main: #f0fdf4;
+      --text-muted: #94a3b8;
+      --modal-overlay: rgba(3, 7, 12, 0.88);
+      --modal-bg: #0b192c;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1.5rem;
+      overflow-x: hidden;
+    }
+
+    /* Instrucción Flotante */
+    .floating-instruction {
+      background: rgba(39, 114, 143, 0.15);
+      border: 1px solid rgba(39, 114, 143, 0.45);
+      color: #93c5fd;
+      padding: 0.85rem 1.8rem;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 3rem;
+      box-shadow: 0 0 25px rgba(39, 114, 143, 0.2), inset 0 0 10px rgba(39, 114, 143, 0.1);
+      backdrop-filter: blur(12px);
+      animation: float 3.5s ease-in-out infinite, fadeInDown 0.8s ease-out;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      letter-spacing: 0.3px;
+    }
+
+    .floating-instruction svg {
+      width: 20px;
+      height: 20px;
+      fill: #38bdf8;
+      filter: drop-shadow(0 0 5px var(--primary-color));
+    }
+
+    /* Grid de Tarjetas (5 tarjetas dinámicas) */
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      max-width: 1240px;
+      width: 100%;
+    }
+
+    /* Tarjeta Futurista */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 2.2rem 1.8rem;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 230px;
+      opacity: 0;
+      animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .card:nth-child(1) { animation-delay: 0.05s; }
+    .card:nth-child(2) { animation-delay: 0.15s; }
+    .card:nth-child(3) { animation-delay: 0.25s; }
+    .card:nth-child(4) { animation-delay: 0.35s; }
+    .card:nth-child(5) { animation-delay: 0.45s; }
+
+    /* Barra brillante superior */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, #1d4ed8, #27728F, #38bdf8);
+      opacity: 0.5;
+      transition: opacity 0.4s ease;
+    }
+
+    /* Resplandor ambiental */
+    .card::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(39, 114, 143, 0.12) 0%, transparent 70%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-10px) scale(1.02);
+      border-color: var(--card-border-hover);
+      box-shadow: 0 20px 45px -10px var(--primary-glow), 0 0 30px rgba(39, 114, 143, 0.25);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card:hover::after {
+      opacity: 1;
+    }
+
+    /* Header de Tarjeta */
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .icon-badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: rgba(39, 114, 143, 0.2);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transition: transform 0.4s ease, background 0.4s ease;
+    }
+
+    .card:hover .icon-badge {
+      transform: rotate(5deg) scale(1.1);
+      background: rgba(39, 114, 143, 0.4);
+      border-color: #38bdf8;
+    }
+
+    .icon-badge svg {
+      width: 24px;
+      height: 24px;
+      fill: #38bdf8;
+    }
+
+    .card-title {
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.35;
+      letter-spacing: -0.2px;
+    }
+
+    /* Acción interactiva */
+    .card-action {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: #38bdf8;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+    .card:hover .card-action {
+      color: #ffffff;
+      transform: translateX(6px);
+    }
+
+    .card-action svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* MODAL EMERGENTE */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--modal-overlay);
+      backdrop-filter: blur(14px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: var(--modal-bg);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 24px;
+      max-width: 700px;
+      width: 100%;
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 2.8rem;
+      position: relative;
+      box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.9), 0 0 50px rgba(39, 114, 143, 0.25);
+      transform: scale(0.88) translateY(30px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-muted);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.3rem;
+      transition: all 0.25s ease;
+    }
+
+    .modal-close:hover {
+      background: rgba(39, 114, 143, 0.4);
+      color: #ffffff;
+      border-color: #38bdf8;
+      transform: rotate(90deg);
+    }
+
+    .modal-header-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(39, 114, 143, 0.3);
+    }
+
+    .modal-body h3 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .modal-body p {
+      color: #cbd5e1;
+      font-size: 0.98rem;
+      line-height: 1.7;
+      margin-bottom: 1.2rem;
+    }
+
+    /* Animaciones */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-7px); }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(35px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Scrollbar */
+    .modal-content::-webkit-scrollbar { width: 7px; }
+    .modal-content::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); }
+    .modal-content::-webkit-scrollbar-thumb { background: #27728F; border-radius: 10px; }
+    .modal-content::-webkit-scrollbar-thumb:hover { background: #38bdf8; }
+  </style>
+</head>
+<body>
+
+  <!-- Instrucción Flotante -->
+  <div class="floating-instruction">
+    <svg viewBox="0 0 24 24">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+    </svg>
+    Haga clic sobre cada tarjeta para ampliar la información.
+  </div>
+
+  <!-- Grid de Tarjetas -->
+  <div class="cards-container">
+    
+    <!-- Tarjeta 1 -->
+    <div class="card" onclick="openModal('modal-1')">
+      <div class="card-header">
+        <div class="icon-badge">
+          <!-- Icono Física / Movimiento -->
+          <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm1-13h-2v6h6v-2h-4z"/></svg>
+        </div>
+        <h2 class="card-title">Principios de física aplicados al tráfico.</h2>
+      </div>
+      <div class="card-action">
+        Ampliar información
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+
+    <!-- Tarjeta 2 -->
+    <div class="card" onclick="openModal('modal-2')">
+      <div class="card-header">
+        <div class="icon-badge">
+          <!-- Icono Infraestructura / Seguridad -->
+          <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+        </div>
+        <h2 class="card-title">Fundamentos de seguridad vial en la infraestructura.</h2>
+      </div>
+      <div class="card-action">
+        Ampliar información
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+
+    <!-- Tarjeta 3 -->
+    <div class="card" onclick="openModal('modal-3')">
+      <div class="card-header">
+        <div class="icon-badge">
+          <!-- Icono Conceptos / Indicadores -->
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+        </div>
+        <h2 class="card-title">Conceptos básicos de seguridad vial.</h2>
+      </div>
+      <div class="card-action">
+        Ampliar información
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+
+    <!-- Tarjeta 4 -->
+    <div class="card" onclick="openModal('modal-4')">
+      <div class="card-header">
+        <div class="icon-badge">
+          <!-- Icono Normativa / Estándares -->
+          <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        </div>
+        <h2 class="card-title">Normativa y estándares de seguridad vial.</h2>
+      </div>
+      <div class="card-action">
+        Ampliar información
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+
+    <!-- Tarjeta 5 -->
+    <div class="card" onclick="openModal('modal-5')">
+      <div class="card-header">
+        <div class="icon-badge">
+          <!-- Icono Matemáticas / Trigonometría -->
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+        </div>
+        <h2 class="card-title">Matemática básica y trigonometría.</h2>
+      </div>
+      <div class="card-action">
+        Ampliar información
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODALES EMERGENTES -->
+
+  <!-- Modal 1 -->
+  <div class="modal-overlay" id="modal-1" onclick="closeModalOnOutsideClick(event, 'modal-1')">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('modal-1')">&times;</button>
+      <div class="modal-body">
+        <div class="modal-header-info">
+          <h3>Principios de física aplicados al tráfico.</h3>
+        </div>
+        <p>Comprensión de las leyes del movimiento (cinemática y dinámica), fuerzas centrífuga y centrípeta, fricción, aceleración y frenado vehicular. Estos fundamentos son esenciales para entender la razón técnica detrás de parámetros como el radio mínimo de curvatura, el peralte y las distancias de visibilidad.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2 -->
+  <div class="modal-overlay" id="modal-2" onclick="closeModalOnOutsideClick(event, 'modal-2')">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('modal-2')">&times;</button>
+      <div class="modal-body">
+        <div class="modal-header-info">
+          <h3>Fundamentos de seguridad vial en la infraestructura.</h3>
+        </div>
+        <p>Conocimiento de los factores que intervienen en la ocurrencia de siniestros viales (humano, vehículo e infraestructura) y comprensión del enfoque de sistema seguro, que reconoce el error humano como inevitable y exige que la infraestructura sea tolerante con él.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3 -->
+  <div class="modal-overlay" id="modal-3" onclick="closeModalOnOutsideClick(event, 'modal-3')">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('modal-3')">&times;</button>
+      <div class="modal-body">
+        <div class="modal-header-info">
+          <h3>Conceptos básicos de seguridad vial.</h3>
+        </div>
+        <p>Familiaridad con indicadores de siniestralidad (tasa de mortalidad, accidentalidad por tramo), clasificación de siniestros por tipo y severidad, y conceptos como zona de tolerancia, velocidad segura e infraestructura perdonadora.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4 -->
+  <div class="modal-overlay" id="modal-4" onclick="closeModalOnOutsideClick(event, 'modal-4')">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('modal-4')">&times;</button>
+      <div class="modal-body">
+        <div class="modal-header-info">
+          <h3>Normativa y estándares de seguridad vial.</h3>
+        </div>
+        <p>Conocimiento general del Manual de Diseño Geométrico de Carreteras de INVIAS (2008) como referente normativo colombiano, y familiaridad básica con los estándares de la AASHTO y los criterios del programa iRAP para la evaluación de la seguridad intrínseca de la infraestructura.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 5 -->
+  <div class="modal-overlay" id="modal-5" onclick="closeModalOnOutsideClick(event, 'modal-5')">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('modal-5')">&times;</button>
+      <div class="modal-body">
+        <div class="modal-header-info">
+          <h3>Matemática básica y trigonometría.</h3>
+        </div>
+        <p>Manejo de relaciones trigonométricas, cálculo de áreas y longitudes, interpretación de tablas y gráficas de diseño, necesarios para la comprensión de las fórmulas de distancia de visibilidad, longitud de curvas verticales y cálculo del peralte.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+      }
+    }
+
+    function closeModalOnOutsideClick(event, modalId) {
+      if (event.target.id === modalId) {
+        closeModal(modalId);
+      }
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        const activeModal = document.querySelector('.modal-overlay.active');
+        if (activeModal) {
+          closeModal(activeModal.id);
+        }
+      }
+    });
+  </script>
+</body>
+</html>
