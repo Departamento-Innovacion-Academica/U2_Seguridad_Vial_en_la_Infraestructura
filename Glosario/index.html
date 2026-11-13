@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glosario Interactivo - Diseño Geométrico de Vías e Ingeniería Vial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        /* --- VARIABLES DE COLOR --- */
+        :root {
+            --primary-brand: #27728F;
+            --primary-hover: #1f5b73;
+            --bg-light: #ececec;
+            --text-dark: #333333;
+            --white: #ffffff;
+            --disabled-gray: #a0a0a0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-image: radial-gradient(#d0d0d0 1px, transparent 1px);
+            background-size: 10px 10px;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* --- PANTALLA INICIAL (PORTADA) --- */
+        .welcome-screen {
+            background: var(--white);
+            width: 100%;
+            max-width: 650px;
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(39, 114, 143, 0.12);
+            text-align: center;
+            position: absolute;
+            transition: all 0.4s ease-in-out;
+            border-top: 6px solid var(--primary-brand);
+            z-index: 10;
+        }
+
+        .welcome-badge {
+            background-color: rgba(39, 114, 143, 0.08);
+            color: var(--primary-brand);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .welcome-screen h1 {
+            color: var(--text-dark);
+            font-size: 2.3rem;
+            font-weight: 700;
+            margin: 0 0 15px 0;
+            line-height: 1.2;
+        }
+
+        .welcome-screen h1 span {
+            color: var(--primary-brand);
+            display: block;
+        }
+
+        .welcome-screen p {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin: 0 auto 35px auto;
+            max-width: 480px;
+        }
+
+        .start-btn {
+            background-color: var(--primary-brand);
+            color: var(--white);
+            border: none;
+            padding: 15px 45px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(39, 114, 143, 0.3);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            outline: none;
+        }
+
+        .start-btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 114, 143, 0.4);
+        }
+
+        .welcome-screen.hidden-screen {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+            visibility: hidden;
+        }
+
+        /* --- CONTENEDOR DEL GLOSARIO --- */
+        .glossary-widget {
+            width: 100%;
+            max-width: 900px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            position: absolute;
+        }
+
+        .glossary-widget.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            position: relative;
+        }
+
+        .instruction-wrapper {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+
+        .instruction-badge {
+            background-color: var(--primary-brand);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: pulse-attention 2s infinite;
+        }
+
+        @keyframes pulse-attention {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(39, 114, 143, 0.4); }
+            70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(39, 114, 143, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(39, 114, 143, 0); }
+        }
+
+        .glossary-header {
+            background-color: var(--primary-brand);
+            color: var(--white);
+            padding: 20px;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .glossary-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .glossary-body {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start; 
+        }
+
+        .tabs-container {
+            display: flex;
+            flex-direction: column;
+            width: 140px;
+            flex-shrink: 0;
+            background-color: var(--primary-brand);
+            border-radius: 15px;
+            padding: 10px 0;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px; 
+        }
+
+        .tab-btn {
+            background: transparent;
+            color: var(--white);
+            border: none;
+            padding: 15px 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            outline: none;
+        }
+
+        .tab-btn:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .tab-btn.active {
+            background-color: var(--bg-light);
+            color: var(--primary-brand);
+            border-radius: 5px 0 0 5px;
+        }
+
+        .content-area {
+            flex-grow: 1;
+            background-color: var(--bg-light);
+            border-radius: 15px;
+            padding: 40px;
+            min-height: 450px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .definition-item {
+            margin-bottom: 30px;
+            padding-left: 20px;
+            border-left: 5px solid var(--primary-brand);
+        }
+
+        .definition-item h3 {
+            color: var(--primary-brand);
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .definition-item p {
+            color: var(--text-dark);
+            line-height: 1.6;
+            margin: 0;
+            text-align: left;
+        }
+
+        .hidden { display: none !important; }
+
+        @keyframes slideUpFade {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .content-group.animate-in .definition-item {
+            animation: slideUpFade 0.5s ease-out forwards;
+            opacity: 0; 
+        }
+
+        .content-group.animate-in .definition-item:nth-child(1) { animation-delay: 0.1s; }
+        .content-group.animate-in .definition-item:nth-child(2) { animation-delay: 0.2s; }
+        .content-group.animate-in .definition-item:nth-child(3) { animation-delay: 0.3s; }
+        .content-group.animate-in .definition-item:nth-child(4) { animation-delay: 0.4s; }
+        .content-group.animate-in .definition-item:nth-child(5) { animation-delay: 0.5s; }
+        .content-group.animate-in .definition-item:nth-child(6) { animation-delay: 0.6s; }
+        .content-group.animate-in .definition-item:nth-child(7) { animation-delay: 0.7s; }
+
+        @media (max-width: 768px) {
+            body { align-items: flex-start; padding: 20px 10px; }
+            .glossary-body { flex-direction: column; }
+            .tabs-container { width: 100%; flex-direction: row; position: static; }
+            .tab-btn { flex: 1; border-bottom: none; border-right: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; }
+            .tab-btn.active { border-radius: 10px 10px 0 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PANTALLA INICIAL (PORTADA) -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-badge">Recurso Interactivo</div>
+        <h1>Glosario de la Unidad <span>Diseño Geométrico de Vías e Ingeniería Vial</span></h1>
+        <p>Explora los conceptos fundamentales sobre alineamientos, criterios de fricción, velocidades de diseño y seguridad vial de forma interactiva.</p>
+        <button class="start-btn" onclick="startGlossary()">
+            Iniciar Recurso <span>➔</span>
+        </button>
+    </div>
+
+    <!-- CONTENEDOR PRINCIPAL DEL GLOSARIO -->
+    <div class="glossary-widget" id="glossaryWidget">
+        <div class="instruction-wrapper">
+            <div class="instruction-badge">
+                <span>👆</span> Haga Clic sobre los botones para ampliar la información
+            </div>
+        </div>
+
+        <div class="glossary-header">
+            <h2>Glosario de Diseño Geométrico de Vías e Ingeniería Vial</h2>
+        </div>
+
+        <div class="glossary-body">
+            <div class="tabs-container">
+                <button class="tab-btn active" onclick="filterContent('A-F', this)">A – F</button>
+                <button class="tab-btn" onclick="filterContent('F2-P', this)">F – P</button>
+                <button class="tab-btn" onclick="filterContent('P2-Z', this)">P – Z</button>
+            </div>
+
+            <div class="content-area">
+                <!-- Grupo A – F -->
+                <div class="content-group animate-in" id="group-A-F">
+                    <div class="definition-item">
+                        <h3>Alineamiento horizontal</h3>
+                        <p>Proyección del eje de la carretera sobre un plano horizontal, conformado por tramos rectos (tangentes), curvas circulares y curvas de transición (espirales). Determina el trazado en planta de la vía y debe garantizar condiciones de operación segura y cómoda a la velocidad de diseño establecida para cada tramo homogéneo (American Association of State Highway and Transportation Officials (AASHTO), 2018).</p>
+                    </div>
+                    <div class="definition-item">
+                        <h3>Alineamiento vertical (perfil longitudinal)</h3>
+                        <p>Proyección del eje de la carretera sobre un plano vertical paralelo a dicho eje. Está compuesto por tangentes verticales (tramos de pendiente uniforme o rasante) enlazadas mediante curvas verticales parabólicas. El perfil longitudinal determina las pendientes de la carretera, las distancias de visibilidad en crestas y valles, y la comodidad de la conducción (Lamm, Psarianos & Mailaender, 1999).</p>
+                    </div>
+                    <div class="definition-item">
+                        <h3>Bombeo transversal</h3>
+                        <p>Inclinación transversal de la calzada en tramos en tangente, orientada desde el eje de la vía hacia los bordes. Su función es evacuar el agua de lluvia sobre la superficie de rodadura, impidiendo su acumulación y el consecuente riesgo de deslizamiento o pérdida de adherencia. Normalmente, se adopta un valor de 2 % en carreteras pavimentadas.</p>
+                    </div>
+                    <div class="definition-item">
+                        <h3>Coeficiente de fricción transversal (f)</h3>
+                        <p>Relación adimensional entre la fuerza de rozamiento lateral que actúa entre el neumático y el pavimento y la fuerza normal sobre la superficie de rodadura. Es un parámetro fundamental en el cálculo del radio mínimo de curvatura y del peralte. Su valor máximo admisible disminuye con el aumento de la velocidad, dado que a velocidades más altas los conductores son más sensibles al deslizamiento lateral.</p>
+                    </div>
+                    <div class="definition-item">
+                        <h3>Curva compuesta</h3>
+                        <p>Combinación de dos o más arcos circulares de diferente radio, con la misma dirección de curvatura, inscritos en forma contigua en el alineamiento horizontal. Su uso es desaconsejado en carreteras de alta velocidad, ya que puede generar inconsistencias en el comportamiento del conductor al percibir cambios abruptos en la curvatura.</p>
+                    </div>
+                    <div class="definition-item">
+                        <h3>Curva cóncava</h3>
+                        <p>Curva vertical que conecta una pendiente negativa (descenso) con una positiva (ascenso), configurando un punto bajo o valle en el perfil longitudinal. Los criterios de diseño para este tipo de curva se basan en la visibilidad nocturna (alcance del haz luminoso de los faros) y en el confort dinámico de los ocupantes del vehículo.</p>
+                    </div>
+                    <div class="definition-item">
+                        <h3>Curva en convexa</h3>
+                        <p>Curva vertical que conecta una pendiente positiva (ascenso) con una negativa (descenso), formando una cima o punto alto en el perfil. El criterio de diseño determinante es la distancia de visibilidad de parada, que limita la longitud mínima de la curva para garantizar que el conductor detecte a tiempo cualquier obstáculo más allá del punto de inflexión.</p>
+                    </div>
+                </div>
+
+                <!-- Grupo F2 – P -->
+                <div class="content-group hidden" id="group-F2-P">
+                    <div class="definition-item">
+                        <h3>Derecho de vía (faja de dominio público)</h3>
+                        <p>Franja de terreno de propiedad del Estado, necesaria para la construcción, mantenimiento, ensanche y protección de la carretera. Incluye la zona de la plataforma, las zonas de seguridad laterales y los eventuales espacios para obras complementarias. Ninguna edificación permanente puede construirse dentro de esta franja sin autorización de la autoridad vial competente.</p>
+                    </div>
+                    <div class="definition-item">
+                        <h3>Distancia de visibilidad de parada (DVP)</h3>
+                        <p>Longitud mínima de carretera que un conductor necesita observar libre de obstáculos para poder detener completamente su vehículo antes de alcanzar un objeto inmóvil situado en su trayectoria. Incluye la distancia recorrida durante el tiempo de percepción-reacción (2,5 s) más la distancia de frenado.</p>
+                    </div>
+                    <div class="definition-item">
+                        <h3>Espiral (curva de transición, clotoide)</h3>
+                        <p>Curva de radio variable continuo, intercalada entre la tangente y la curva circular en el alineamiento horizontal, cuya curvatura crece linealmente con la longitud recorrida. Su función es introducir progresivamente la aceleración centrífuga, alojar la transición de peralte y mejorar la legibilidad del trazado para el conductor. El tipo más utilizado en vías colombianas es la clotoide.</p>
+                    </div>
+                    <div class="definition-item">
+                        <h3>Factor de forma K (curvas verticales)</h3>
+                        <p>Parámetro que relaciona la longitud de una curva vertical con la diferencia algebraica de pendientes que enlaza (K = L / A). Expresa la longitud de curva por cada 1 % de cambio de pendiente y se utiliza como control de diseño para garantizar la visibilidad y el confort. A mayor velocidad de diseño, mayor debe ser el valor mínimo de K (Instituto Nacional de Vías (INVIAS), 2008).</p>
+                    </div>
+                    <div class="definition-item">
+                        <h3>Fricción longitudinal</h3>
+                        <p>Componente de la fuerza de rozamiento entre el neumático y el pavimento en la dirección del movimiento del vehículo. Actúa durante las maniobras de aceleración y frenado, siendo determinante en el cálculo de la distancia de frenado y, por consiguiente, de la distancia de visibilidad de parada. Su valor máximo disponible se reduce con la velocidad y con las condiciones adversas del pavimento (mojado, contaminado) (American Association of State Highway and Transportation Officials (AASHTO), 2018).</p>
+                    </div>
+                    <div class="definition-item">
+                        <h3>Parámetro de aceleración lateral (jerk)</h3>
+                        <p>Variación de la aceleración centrífuga por unidad de tiempo, experimentada por los ocupantes de un vehículo al entrar o salir de una curva horizontal. Es el criterio de confort que determina la longitud mínima de las curvas de transición: valores elevados de jerk generan incomodidad y pueden afectar la estabilidad del vehículo, especialmente en camiones de carga. El valor máximo aceptable usualmente adoptado es entre 0,4 y 0,7 m/s³ (Lamm, Psarianos & Mailaender, 1999).</p>
+                    </div>
+                    <div class="definition-item">
+                        <h3>Platoon vehicular (pelotón de tráfico)</h3>
+                        <p>Formación de varios vehículos circulando agrupados con reducida separación entre sí, generalmente originada por la presencia de un vehículo lento que encabeza la columna e impide el adelantamiento de los siguientes. El fenómeno reduce la calidad del flujo y puede inducir a maniobras de rebase arriesgadas en condiciones de visibilidad limitada (Transportation Research Board (TRB), 2022).</p>
+                    </div>
+                </div>
+
+                <!-- Grupo P2 – Z -->
+                <div class="content-group hidden" id="group-P2-Z">
+                    <div class="definition-item">
+                        <h3>Vehículo de diseño</h3>
+                        <p>Tipo representativo de vehículo cuyas dimensiones físicas (largo, ancho, alto, distancia entre ejes, radio de giro) y características dinámicas se utilizan como referencia para definir los parámetros geométricos de la carretera: anchos de carril, radios de intersecciones, sobreanchos, galerías de túneles, entre otros. INVIAS clasifica los vehículos de diseño en categorías como automóviles, camiones unitarios, semirremolques y vehículos especiales.</p>
+                    </div>
+                    <div class="definition-item">
+                        <h3>Velocidad de diseño (VTR)</h3>
+                        <p>Velocidad seleccionada para un tramo homogéneo de carretera, que sirve como referencia para el dimensionamiento de todos los elementos geométricos de dicho tramo: radio mínimo de curvas, longitudes de curvas verticales, distancias de visibilidad, peralte y transiciones. En Colombia, INVIAS la denomina velocidad de diseño del tramo homogéneo (VTR) y exige que sea lógica con respecto a la topografía, la función de la vía y las expectativas del conductor.</p>
+                    </div>
+                    <div class="definition-item">
+                        <h3>Velocidad específica (VE)</h3>
+                        <p>Velocidad asignada a un elemento geométrico individual (curva horizontal, curva vertical, tangente) dentro de un tramo homogéneo, en función de sus propias características geométricas. Es siempre igual o menor que la velocidad de diseño del tramo. Los criterios de consistencia de INVIAS establecen que la velocidad específica de cualquier elemento no debe diferir en más de 20 km/h de la velocidad de diseño del tramo.</p>
+                    </div>
+                    <div class="definition-item">
+                        <h3>Velocidad de operación (V85)</h3>
+                        <p>Velocidad del percentil 85 de la distribución de velocidades observadas en una muestra de vehículos livianos circulando libremente en condiciones favorables (flujo libre, sin interferencia). Representa la velocidad a la cual el 85 % de los conductores circula igual o más despacio en un punto o tramo dado. Es el indicador de referencia para evaluar la consistencia del diseño geométrico y la seguridad operacional de la vía (Posada, Cadavid & Castro, 2014).</p>
+                    </div>
+                    <div class="definition-item">
+                        <h3>Velocidad reglamentaria (límite de velocidad)</h3>
+                        <p>La velocidad reglamentaria es el límite máximo permitido legalmente en un tramo vial, establecido por el Ministerio de Transporte o las autoridades locales, el cual debe ser estrictamente congruente con la velocidad de diseño y de operación para evitar inconsistencias que eleven el riesgo de siniestros. De acuerdo con la Ley 2251 de 2022 (Ley Julián Esteban), este límite se rige bajo el enfoque de "Sistema Seguro", priorizando la protección de la vida humana al fijar topes máximos de 50 km/h en zonas urbanas (30 km/h en áreas residenciales y escolares), 90 km/h en carreteras nacionales o departamentales y, excepcionalmente, hasta 120 km/h en dobles calzadas sin cruces peatonales, buscando armonizar la infraestructura geométrica con el comportamiento humano para proteger especialmente a los actores viales más vulnerables.</p>
+                    </div>
+                    <div class="definition-item">
+                        <h3>Zona libre de obstáculos (clear zone)</h3>
+                        <p>Franja lateral adyacente a la calzada que debe mantenerse libre de obstáculos fijos o elementos peligrosos, de modo que un vehículo que se desvíe involuntariamente de la calzada pueda recuperar el control o detenerse de forma segura. Su ancho depende de la velocidad de diseño, el volumen de tránsito y la geometría del tramo. Es un concepto central del diseño vial perdonador (forgiving road design) (International Road Assessment Programme (iRAP), 2022).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    function startGlossary() {
+        const welcome = document.getElementById('welcomeScreen');
+        const glossary = document.getElementById('glossaryWidget');
+        
+        welcome.classList.add('hidden-screen');
+        glossary.classList.add('show');
+    }
+
+    function filterContent(groupId, btnElement) {
+        const groups = document.querySelectorAll('.content-group');
+        groups.forEach(group => {
+            group.classList.add('hidden');
+            group.classList.remove('animate-in');
+        });
+
+        const selectedGroup = document.getElementById('group-' + groupId);
+        if (selectedGroup) {
+            selectedGroup.classList.remove('hidden');
+            void selectedGroup.offsetWidth; 
+            selectedGroup.classList.add('animate-in');
+        }
+
+        const buttons = document.querySelectorAll('.tab-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
+    }
+</script>
+
+</body>
+</html>
