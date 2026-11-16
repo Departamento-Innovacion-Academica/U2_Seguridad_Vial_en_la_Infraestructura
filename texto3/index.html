@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrusel de Párrafos</title>
+
+  <!-- Google Fonts: Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 50% 0%, #0d212b 0%, #081218 60%, #04080c 100%);
+      --card-bg: rgba(15, 33, 43, 0.75);
+      --card-border: rgba(39, 114, 143, 0.3);
+      --card-border-hover: #52a3c7;
+      --accent-color: #27728F;
+      --accent-glow: rgba(39, 114, 143, 0.35);
+      --text-main: #f3f4f6;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      overflow-x: hidden;
+    }
+
+    /* Instrucción Flotante actualizada */
+    .floating-instruction {
+      background: rgba(39, 114, 143, 0.15);
+      border: 1px solid rgba(39, 114, 143, 0.45);
+      color: #b7e3f8;
+      padding: 0.85rem 1.8rem;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 0 25px rgba(39, 114, 143, 0.2), inset 0 0 10px rgba(39, 114, 143, 0.1);
+      backdrop-filter: blur(12px);
+      animation: float 3.5s ease-in-out infinite, fadeInDown 0.8s ease-out;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      letter-spacing: 0.3px;
+      text-align: center;
+    }
+
+    .floating-instruction svg {
+      width: 20px;
+      height: 20px;
+      fill: #52a3c7;
+      filter: drop-shadow(0 0 5px #27728F);
+      flex-shrink: 0;
+    }
+
+    /* Contenedor Principal del Carrusel */
+    .carousel-container {
+      max-width: 850px;
+      width: 100%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Tarjeta del Carrusel */
+    .carousel-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 3rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(39, 114, 143, 0.15);
+      width: 100%;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .carousel-card:hover {
+      border-color: var(--card-border-hover);
+      box-shadow: 0 25px 50px -10px var(--accent-glow), 0 0 40px rgba(39, 114, 143, 0.25);
+    }
+
+    /* Barra brillante superior */
+    .carousel-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #1d5267, #27728F, #52a3c7);
+    }
+
+    /* Contenido dinámico del párrafo */
+    .carousel-slide {
+      display: none;
+      animation: fadeIn 0.5s ease-in-out forwards;
+    }
+
+    .carousel-slide.active {
+      display: block;
+    }
+
+    .slide-text {
+      color: #cbd5e1;
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+
+    /* Controles de Navegación */
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 2rem;
+      width: 100%;
+    }
+
+    .nav-btn {
+      background: rgba(39, 114, 143, 0.2);
+      border: 1px solid rgba(82, 163, 199, 0.4);
+      color: #b7e3f8;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      font-weight: 700;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-btn:hover {
+      background: #27728F;
+      color: #ffffff;
+      border-color: #52a3c7;
+      transform: scale(1.1);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .nav-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Indicadores de Puntos (Dots) */
+    .carousel-dots {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(148, 163, 184, 0.3);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dot.active {
+      background: #52a3c7;
+      width: 28px;
+      border-radius: 6px;
+      box-shadow: 0 0 10px #52a3c7;
+    }
+
+    /* Animaciones */
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-7px);
+      }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(35px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .carousel-card {
+        padding: 2rem 1.5rem;
+        min-height: 360px;
+      }
+
+      .slide-text {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Instrucción Flotante Actualizada -->
+  <div class="floating-instruction">
+    <svg viewBox="0 0 24 24">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+    </svg>
+    Haga clic sobre los botones de navegación &lt;, &gt; para ampliar la información.
+  </div>
+
+  <!-- Contenedor del Carrusel -->
+  <div class="carousel-container">
+    <div class="carousel-card">
+
+      <!-- Slide 1 -->
+      <div class="carousel-slide active" id="slide-0">
+        <p class="slide-text">
+          Las curvas verticales son elementos de transición que conectan dos tangentes verticales con diferentes
+          pendientes, proporcionando un cambio progresivo de inclinación en el perfil de la vía. En el diseño geométrico
+          moderno se emplean generalmente curvas parabólicas para estas transiciones, las cuales pueden ser convexas (de
+          cresta) cuando unen una pendiente ascendente con una descendente (formando una cima), o cóncavas (de "sag")
+          cuando enlazan una pendiente descendente con otra ascendente (formando un valle). El propósito principal de
+          las curvas verticales es garantizar que los cambios de gradiente se den de forma suave y segura, evitando
+          quiebres abruptos que reducen la visibilidad y generan incomodidad. Los criterios fundamentales para el diseño
+          de curvas verticales en vías rurales, estrechamente ligados a la seguridad vial, incluyen la distancia de
+          visibilidad, la comodidad, la pendiente relativa y la coherencia con la velocidad de diseño.
+        </p>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="carousel-slide" id="slide-1">
+        <p class="slide-text">
+          Curvas verticales convexas (crestas) y visibilidad: en las curvas de cresta, la superficie de la carretera
+          forma una cima que puede obstaculizar la línea de visión de los conductores hacia objetos o vehículos en la
+          vía opuesta. Por ello, el criterio de diseño más importante es asegurar que en cada cresta exista al menos la
+          distancia de visibilidad de parada (DVP) requerida para la velocidad de diseño de la carretera (International
+          Road Assessment Programme (iRAP), 2022). La DVP es la distancia mínima necesaria para que un conductor detenga
+          su vehículo de forma segura ante un obstáculo inesperado en el camino. Tanto INVÍAS (2008) como AASHTO (2018)
+          establecen valores de DVP en función de la velocidad de diseño; en términos prácticos, esto implica que la
+          longitud mínima de la curva vertical (L) debe ser suficiente para que, al aproximarse a la cima, el conductor
+          pueda ver la superficie de la carretera y cualquier obstáculo con la anticipación necesaria. Los manuales
+          ofrecen métodos para calcular esta longitud mínima L en función de la diferencia algebraica de pendientes (A)
+          y la DVP requerida; uno de ellos es a través del coeficiente K (longitud de curva por cada 1 % de cambio de
+          pendiente). Por ejemplo, para una "cresta" con A = 4 % y una DVP requerida de 160 m, el diseño debe cumplir
+          con un K mínimo específico (según INVÍAS, 2008) de modo que: <br> <br>L = Kmin × A ; L provee esos 160 m de
+          visibilidad.
+        </p>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="carousel-slide" id="slide-2">
+        <p class="slide-text">
+          Si la curva vertical es demasiado corta (K muy bajo), el conductor, al coronar la pendiente, no verá a tiempo
+          un obstáculo en el siguiente descenso, creando un riesgo de colisión. Garantizar la visibilidad en crestas es
+          vital para evitar choques frontales y alcance: una cresta pronunciada y corta puede ocultar vehículos que
+          vienen en sentido contrario o peatones/animales en la calzada hasta que la distancia es insuficiente para
+          frenar. Por ello, se debe diseñar con un margen de seguridad, incluso superando ligeramente la DVP mínima si
+          es factible, para compensar variaciones en las condiciones reales (American Association of State Highway and
+          Transportation Officials (AASHTO), 2018). Adicionalmente, en carreteras bidireccionales de dos carriles, las
+          crestas influyen en la distancia de visibilidad de adelantamiento (ver Figura 18). Aunque el estándar de
+          diseño usual se basa en la DVP (seguridad fundamental), algunas normativas sugieren que, cuando el nivel de
+          servicio deseado lo amerite, se procuren curvas verticales que también permitan visibilidad de adelantamiento
+          en ciertos puntos (por ejemplo, en vías primarias de alto tránsito).
+        </p>
+      </div>
+
+      <!-- Controles de navegación y puntos -->
+      <div class="carousel-controls">
+        <button class="nav-btn" onclick="prevSlide()" title="Anterior">&lt;</button>
+        <div class="carousel-dots" id="carouselDots"></div>
+        <button class="nav-btn" onclick="nextSlide()" title="Siguiente">&gt;</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let currentIndex = 0;
+    const slides = document.querySelectorAll('.carousel-slide');
+    const totalSlides = slides.length;
+    const dotsContainer = document.getElementById('carouselDots');
+
+    // Crear puntos indicadores dinámicamente
+    function createDots() {
+      for (let i = 0; i < totalSlides; i++) {
+        const dot = document.createElement('div');
+        dot.classList.add('dot');
+        if (i === 0) dot.classList.add('active');
+        dot.setAttribute('onclick', `goToSlide(${i})`);
+        dotsContainer.appendChild(dot);
+      }
+    }
+
+    function updateCarousel() {
+      slides.forEach((slide, index) => {
+        slide.classList.remove('active');
+        if (index === currentIndex) {
+          slide.classList.add('active');
+        }
+      });
+
+      const dots = document.querySelectorAll('.dot');
+      dots.forEach((dot, index) => {
+        dot.classList.remove('active');
+        if (index === currentIndex) {
+          dot.classList.add('active');
+        }
+      });
+    }
+
+    function nextSlide() {
+      currentIndex = (currentIndex + 1) % totalSlides;
+      updateCarousel();
+    }
+
+    function prevSlide() {
+      currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+      updateCarousel();
+    }
+
+    function goToSlide(index) {
+      currentIndex = index;
+      updateCarousel();
+    }
+
+    // Navegación con teclado (Flechas izquierda y derecha)
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'ArrowRight') {
+        nextSlide();
+      } else if (event.key === 'ArrowLeft') {
+        prevSlide();
+      }
+    });
+
+    // Inicializar puntos al cargar
+    createDots();
+  </script>
+</body>
+
+</html>
